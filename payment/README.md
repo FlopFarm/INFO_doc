@@ -13,6 +13,8 @@ FlapForm address is a smart contract. It will maintain the balance of user. Afte
 1. Prepare account (User, Receiver, Smart Contract)
 2. Deploy Smart Contract
 3. DEMO.
+    1. Use Python: Create new accounts. Run scripts manually to commit transactions. Maybe need to deploy a Python Server.
+    2. Use JS: Use Metamask Provider. Should better fit into our front-end. 
 
 
 
