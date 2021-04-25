@@ -3,197 +3,77 @@
 
 <head>
   <meta charset="UTF-8">
-  <!-- <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script> -->
+  <script src="jquery.min.js" charset="utf-8"></script>
   <script src="web3.min.js" charset="utf-8"></script>
+  <script src="initEth.js" charset="utf-8"></script>
 </head>
 
 <body>
+  <div>
+  <button onclick="Deposit()">
+    Deposit
+  </button>
+
+  <button onclick="Send()">
+    Send
+  </button>
+
+  <button onclick="Withdraw()">
+    Withdraw
+  </button>
+
+  <button onclick="RefreshBalance()">
+    Refresh Balance
+  </button>
+</div>
+
+
+<div>
+  Sender's Balance: <p id="senB"></p> 
+</div>
+
+<div>
+  Receiver's Balance: <p id="recB"></p>
+</div>
+
+  <script>
+
+    function RefreshBalance() {
+      myContract.methods.getBalance(sender).call().then(function (res) {
+        // $("#senB").html.  
+        console.log(res);
+        document.getElementById("senB").innerHTML = res;
+      })
+
+      myContract.methods.getBalance(receiver).call().then(function (res) {
+        // $("#senB").html.  
+        console.log(res);
+        document.getElementById("recB").innerHTML = res;
+      })
+    }
+    function Deposit() {
+      console.log("InDeposit");
+      DepositTransaction = ({
+          from: sender,
+          to: SSaddress, // smart contract address
+          value: web3.utils.toWei("1", "ether")
+        });
+      myContract.methods.deposit().send(DepositTransaction);
+  }
+  
+  function Send() {
+      SendTransaction = ({
+          from: sender
+      });
+      myContract.methods.send(receiver, 100).send(SendTransaction);
+  }
+  
+  function Withdraw() {
+      WithdrawTransaction = ({
+          from: receiver
+      })
+      myContract.methods.withdraw(100).send(WithdrawTransaction);
+  }
+  </script>
 </body>
-<script>
-  // Log in to window ethereum. 
-  const ethEnabled = () => {
-    if (window.ethereum) {
-      window.web3 = new Web3(window.ethereum);
-      window.ethereum.enable();
-      return true;
-    }
-    return false;
-  }
-  
-  // Check whether the environment is OK.
-  if (!ethEnabled()) {
-    alert("Please install MetaMask to use this dApp!");
-  } else {
-    console.log("Ethereum!")
-  }
-  ABI = [
-    {
-      "constant": true,
-      "inputs": [],
-      "name": "minter",
-      "outputs": [
-        {
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "name": "balances",
-      "outputs": [
-        {
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "amount",
-          "type": "uint256"
-        }
-      ],
-      "name": "withdraw",
-      "outputs": [],
-      "payable": false,
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "receiver",
-          "type": "address"
-        },
-        {
-          "name": "amount",
-          "type": "uint256"
-        }
-      ],
-      "name": "mint",
-      "outputs": [],
-      "payable": false,
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "constant": false,
-      "inputs": [],
-      "name": "Coin",
-      "outputs": [],
-      "payable": false,
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "receiver",
-          "type": "address"
-        },
-        {
-          "name": "amount",
-          "type": "uint256"
-        }
-      ],
-      "name": "send",
-      "outputs": [],
-      "payable": false,
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "constant": false,
-      "inputs": [],
-      "name": "deposit",
-      "outputs": [],
-      "payable": true,
-      "stateMutability": "payable",
-      "type": "function"
-    },
-    {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "add",
-          "type": "address"
-        }
-      ],
-      "name": "getBalance",
-      "outputs": [
-        {
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": false,
-          "name": "from",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "name": "to",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "name": "amount",
-          "type": "uint256"
-        }
-      ],
-      "name": "Sent",
-      "type": "event"
-    }
-  ]
-  
-  sender = "0x556C3a1Fc439709CaE2a1795540Cf6094fd3f78F"
-  SSaddress = "0x68a0b88Ff1888E4E8E18f308043E00209B8Ec306"
-  receiver = "0x8b2701428Aa6169B590B1b08749dd63A5D272456"
-
-  transaction = ({
-    from: sender,
-    // to: "0x059A06C30e3059B6A76683cFbA4Ab6B839618edD", // receiver address
-    to: SSaddress, // smart contract address
-    // to: "0x07D62a36D35261AfEcF6cb89382D393a398edc1a",
-    value: web3.utils.toWei("0.0000000002", "ether")
-  })
-  // web3.eth.sendTransaction(transaction)
-
-  // Instantiate the smart contract
-  mycontract = new web3.eth.Contract(ABI, SSaddress)
-
-  // Call the function in smart contract with transaction
-  mycontract.methods.deposit().send(transaction)
-
-  mycontract.methods.send(0.01).send(transaction)
-  
-  // Get balance in smart contract.
-  console.log(mycontract.methods.getBalance(sender).call())
-</script>
-
 </html>
